@@ -1,0 +1,57 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# SQLite databases
+*.db
+*.sqlite3
+
+# Uploaded images
+attendance_images/
+task_images/
+
+# Temporary files
+*.tmp
+*.temp
+
+# MySQL dump files
+*.sql
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets
+secrets.json
+credentials.json
