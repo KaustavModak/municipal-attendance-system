@@ -17,6 +17,18 @@ from app.routes.attendance import (
 from app.routes.tasks import (
     router as task_router
 )
+from app.routes.dashboard import (
+    router as dashboard_router
+)
+from app.routes.profile import (
+    router as profile_router
+)
+from app.routes.admin_dashboard import (
+    router as admin_dashboard_router
+)
+from app.routes.upload import (
+    router as upload_router
+)
 
 app = FastAPI(
     title="Municipal Attendance System"
@@ -28,6 +40,10 @@ app.include_router(employee_router)
 app.include_router(office_router)
 app.include_router(attendance_router)
 app.include_router(task_router)
+app.include_router(dashboard_router)
+app.include_router(profile_router)
+app.include_router(admin_dashboard_router)
+app.include_router(upload_router)
 
 @app.get("/")
 def root():

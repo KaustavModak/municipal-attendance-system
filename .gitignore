@@ -1,4 +1,4 @@
-# Python cache
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -6,52 +6,50 @@ __pycache__/
 # Virtual Environment
 venv/
 env/
-ENV/
+.venv/
 
-# Environment variables
+# Environment Variables
 .env
 
-# VS Code
+# IDE
 .vscode/
-
-# PyCharm
 .idea/
 
-# OS files
+# OS Files
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-
-# Coverage
-.coverage
-htmlcov/
-.pytest_cache/
-
-# Build files
+# Python Packaging
 build/
 dist/
 *.egg-info/
 
-# SQLite databases
+# Logs
+*.log
+
+# Database
 *.db
 *.sqlite3
 
-# Uploaded images
-attendance_images/
-task_images/
+# Temporary Uploads
+temp_uploads/
 
-# Temporary files
-*.tmp
-*.temp
+# Pytest
+.pytest_cache/
 
-# MySQL dump files
-*.sql
+# Coverage
+.coverage
+htmlcov/
+
+# MyPy
+.mypy_cache/
+
+# Cloudinary temp files
+uploads/
 
 # Jupyter
 .ipynb_checkpoints/
 
-# Secrets
-secrets.json
-credentials.json
+# Generated files
+*.csv~
+*.tmp

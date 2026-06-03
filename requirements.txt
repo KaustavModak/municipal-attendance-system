@@ -2,9 +2,11 @@ fastapi
 uvicorn
 sqlalchemy
 pymysql
-alembic
 python-jose
 passlib[bcrypt]
+bcrypt
 python-multipart
-cloudinary
+pydantic
 pydantic-settings
+pytz
+cloudinary

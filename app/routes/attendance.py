@@ -19,11 +19,14 @@ from app.schemas.attendance import (
     AttendanceResponse,
     AttendanceListResponse,
     TodayAttendanceResponse,
-    TodayAttendanceDetailResponse
-)
+    TodayAttendanceDetailResponse,
+    AttendanceHistoryResponse,
+    ManualAttendanceCreate
+    )
 
 from app.utils.dependencies import (
-    get_current_admin
+    get_current_admin,
+    get_current_employee
 )
 
 router = APIRouter(
@@ -86,7 +89,7 @@ def calculate_distance_meters(
 def mark_attendance(
     attendance_data: AttendanceCreate,
     db: Session = Depends(get_db),
-    admin_id: int = Depends(get_current_admin)
+    employee_id: int = Depends(get_current_employee)
 ):
     """
     Mark attendance.
@@ -96,8 +99,7 @@ def mark_attendance(
     employee = (
         db.query(Employee)
         .filter(
-            Employee.id ==
-            attendance_data.employee_id
+            Employee.id == employee_id
         )
         .first()
     )
@@ -258,7 +260,7 @@ def get_all_attendance(
 #         )
 #     }
 
-@router.get(
+@router.get(    # Today's attendance summary
     "/today",
     response_model=TodayAttendanceResponse
 )
@@ -270,7 +272,8 @@ def today_attendance_summary(
     Today's attendance summary.
     """
 
-    today = date.today()
+    india_timezone = pytz.timezone("Asia/Kolkata")
+    today = datetime.now(india_timezone).date()
 
     total_employees = (
         db.query(Employee)
@@ -329,7 +332,7 @@ def today_attendance_summary(
 from typing import List
 
 
-@router.get(
+@router.get(    # Detailed attendance for today
     "/today/details",
     response_model=List[TodayAttendanceDetailResponse]
 )
@@ -341,7 +344,8 @@ def today_attendance_details(
     Detailed attendance for today.
     """
 
-    today = date.today()
+    india_timezone = pytz.timezone("Asia/Kolkata")
+    today = datetime.now(india_timezone).date()
 
     employees = (
         db.query(Employee)
@@ -375,3 +379,102 @@ def today_attendance_details(
         )
 
     return results
+
+
+@router.get(   # Get attendance history of logged-in employee
+    "/my/history",
+    response_model=List[AttendanceHistoryResponse]
+)
+def my_attendance_history(
+    db: Session = Depends(get_db),
+    employee_id: int = Depends(get_current_employee)
+):
+    """
+    Get attendance history of logged-in employee.
+    """
+
+    records = (
+        db.query(Attendance)
+        .filter(
+            Attendance.employee_id == employee_id
+        )
+        .order_by(
+            Attendance.date.desc()
+        )
+        .all()
+    )
+
+    return records
+
+
+@router.post(
+    "/manual",
+    response_model=AttendanceResponse
+)
+def mark_manual_attendance(
+    attendance_data: ManualAttendanceCreate,
+    db: Session = Depends(get_db),
+    admin_id: int = Depends(get_current_admin)
+):
+    """
+    Admin manually marks attendance.
+    """
+
+    employee = (
+        db.query(Employee)
+        .filter(
+            Employee.id == attendance_data.employee_id
+        )
+        .first()
+    )
+
+    if not employee:
+        raise HTTPException(
+            status_code=404,
+            detail="Employee not found"
+        )
+
+    india_timezone = pytz.timezone(
+        "Asia/Kolkata"
+    )
+
+    current_datetime = datetime.now(
+        india_timezone
+    )
+
+    today = current_datetime.date()
+
+    existing = (
+        db.query(Attendance)
+        .filter(
+            Attendance.employee_id == employee.id,
+            Attendance.date == today
+        )
+        .first()
+    )
+
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="Attendance already exists"
+        )
+
+    attendance = Attendance(
+        employee_id=employee.id,
+        date=today,
+        time=current_datetime.time(),
+        status=attendance_data.status,
+        latitude=0,
+        longitude=0,
+        selfie_url="MANUAL_ATTENDANCE",
+        manual_marked=True,
+        updated_by_admin=admin_id
+    )
+
+    db.add(attendance)
+
+    db.commit()
+
+    db.refresh(attendance)
+
+    return attendance

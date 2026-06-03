@@ -36,7 +36,7 @@ class TaskImageResponse(BaseModel): # For returning task image data in API respo
     class Config:
         from_attributes = True
 
-class MyTaskResponse(BaseModel):
+class MyTaskResponse(BaseModel): # For returning task data in API responses when listing tasks assigned to an employee
     id: int
     title: str
     description: str

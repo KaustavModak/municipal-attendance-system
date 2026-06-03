@@ -18,7 +18,7 @@ from app.schemas.task import (
     TaskImageCreate,
     TaskImageResponse,
     MyTaskResponse
-)
+    )
 
 from app.utils.dependencies import (
     get_current_admin,
@@ -171,10 +171,6 @@ def complete_task(
     "/{task_id}/images",
     response_model=TaskImageResponse
 )
-@router.post(
-    "/{task_id}/images",
-    response_model=TaskImageResponse
-)
 def add_task_image(
     task_id: int,
     image_data: TaskImageCreate,
@@ -263,3 +259,54 @@ def get_task_images(
     )
 
     return images
+
+@router.get(
+    "/my/history",
+    response_model=List[MyTaskResponse]
+)
+def get_my_task_history(
+    db: Session = Depends(get_db),
+    employee_id: int = Depends(get_current_employee)
+):
+    """
+    Get completed task history
+    of logged-in employee.
+    """
+
+    tasks = (
+        db.query(Task)
+        .filter(
+            Task.employee_id == employee_id,
+            Task.status == "completed"
+        )
+        .order_by(
+            Task.completed_at.desc()
+        )
+        .all()
+    )
+
+    return tasks
+
+@router.get(
+    "/my/tasks",
+    response_model=List[MyTaskResponse]
+)
+def get_my_tasks(
+    db: Session = Depends(get_db),
+    employee_id: int = Depends(get_current_employee)
+):
+    """
+    Get all tasks assigned to
+    the logged-in employee.
+    """
+
+    tasks = (
+        db.query(Task)
+        .filter(
+            Task.employee_id == employee_id
+        )
+        .order_by(Task.status.asc())
+        .all()
+    )
+
+    return tasks

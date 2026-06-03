@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from datetime import date, time
 
 class AttendanceCreate(BaseModel): # For creating new attendance record
-    employee_id: int
     latitude: float
     longitude: float
     selfie_url: str
@@ -40,4 +39,16 @@ class TodayAttendanceResponse(BaseModel): # For returning attendance summary for
 
 class TodayAttendanceDetailResponse(BaseModel): # For returning detailed attendance records for today in API responses
     employee_name: str
+    status: str
+
+class AttendanceHistoryResponse(BaseModel): # For returning attendance history for an employee in API responses
+    date: date
+    time: time
+    status: str
+
+    class Config:
+        from_attributes = True
+
+class ManualAttendanceCreate(BaseModel): # For creating manual attendance record (used by admin when marking attendance for employees who could not mark)
+    employee_id: int
     status: str
