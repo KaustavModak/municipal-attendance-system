@@ -2,70 +2,113 @@
 
 ## Overview
 
-Municipal Attendance & Task Management System is a workforce management platform designed for municipal corporations, government departments, and field operations teams.
+Municipal Attendance & Task Management System is a workforce management platform designed for municipal corporations, government departments, field operations teams, and public service organizations.
 
-The system enables administrators to manage employees, offices, attendance records, and field tasks while allowing employees to mark attendance using GPS verification, complete assigned tasks, upload proof images, and track their work history.
+The platform enables administrators to manage employees, offices, attendance records, field tasks, reports, and operational monitoring while allowing employees to mark attendance using GPS verification, complete assigned tasks, upload proof images, and track work history.
 
-The platform is designed to improve transparency, accountability, and operational efficiency in municipal field operations.
+The system focuses on transparency, accountability, operational efficiency, and auditability of field operations.
 
 ---
 
-## Key Features
+# Features
 
-### Authentication & Authorization
+## Authentication & Authorization
 
-* Secure JWT-based authentication
+* JWT-based authentication
 * Separate Admin and Employee roles
 * Protected API endpoints
 * Password hashing using bcrypt
+* Role-based access control
 
-### Employee Management
+---
 
-* Create employees
+## Employee Management
+
+* Create employee
 * View employee details
 * Update employee information
-* Activate or deactivate employees
+* Activate employee
+* Deactivate employee
 * Office assignment management
 
-### Office Management
+---
 
-* Create offices
-* Define office GPS coordinates
-* Configure attendance radius
-* Update office information
+## Office Management
 
-### Attendance Management
+* Create office
+* Update office
+* Delete office
+* View office details
+* Configure GPS attendance radius
+
+---
+
+## Attendance Management
 
 * GPS-based attendance validation
-* Radius verification using office location
-* Attendance status classification:
+* Office radius verification
+* Automatic attendance classification
 
-  * Present
-  * Late
-  * Absent
-* Attendance history tracking
+Attendance statuses:
+
+* Present
+* Late
+* Absent
+
+Additional Features:
+
+* Attendance history
+* Today's attendance summary
+* Detailed attendance view
 * Manual attendance override by administrators
-* Daily attendance reports and summaries
+* Attendance reports
 
-### Task Management
+---
+
+## Task Management
 
 * Assign tasks to employees
-* Track task completion
-* Record completion location
+* Task deadline tracking
+* Task completion tracking
 * Late task detection
-* Upload task completion evidence
-* View task history
+* Completion location recording
+* Task evidence upload
+* Task image management
+* Task detail view
+* Task history
 
-### Dashboard
+Task Statuses:
 
-#### Employee Dashboard
+* Pending
+* Completed
 
-* Today's attendance status
+---
+
+## Evidence Image Management
+
+* Cloudinary integration
+* Task proof image upload
+* Employee image viewing
+* Admin image viewing
+* Admin image deletion
+* Audit tracking for image deletion
+
+---
+
+## Dashboard
+
+### Employee Dashboard
+
+Displays:
+
+* Attendance status
 * Pending tasks
 * Completed tasks
 * Late tasks
 
-#### Admin Dashboard
+### Admin Dashboard
+
+Displays:
 
 * Total employees
 * Present employees
@@ -74,42 +117,179 @@ The platform is designed to improve transparency, accountability, and operationa
 * Pending tasks
 * Completed tasks
 
-### Cloud Image Storage
+---
 
-* Cloudinary integration
-* Attendance selfie storage
-* Task evidence image storage
-* Secure image URLs
+## Reports Module
+
+Administrators can download reports for any date from the last 60 days.
+
+Available Reports:
+
+### Attendance Report
+
+Includes:
+
+* Employee ID
+* Employee Name
+* Attendance Status
+* Date
+* Time
+
+### Task Report
+
+Includes:
+
+* Task ID
+* Task Title
+* Employee Name
+* Status
+* Deadline
+* Completion Time
+* Late Status
+
+### Summary Report
+
+Includes:
+
+* Total Employees
+* Present Employees
+* Late Employees
+* Absent Employees
+* Pending Tasks
+* Completed Tasks
+
+Reports are exported in Excel format (.xlsx).
 
 ---
 
-## Technology Stack
+## Audit Logging
 
-### Backend
+Tracks all critical administrator actions.
+
+Examples:
+
+* Employee creation
+* Employee updates
+* Employee status changes
+* Office creation
+* Office deletion
+* Task assignment
+* Manual attendance marking
+* Task image deletion
+
+Audit Log Fields:
+
+* Admin ID
+* Action
+* Entity Type
+* Entity ID
+* Details
+* Timestamp
+
+---
+
+## Error Logging
+
+Automatically records internal server errors.
+
+Captured Information:
+
+* Route
+* Error message
+* Timestamp
+
+Used for:
+
+* Debugging
+* Monitoring
+* Production troubleshooting
+
+---
+
+## Database Backup
+
+Supports manual database backup generation.
+
+Features:
+
+* Full MySQL dump
+* Structure backup
+* Data backup
+* Timestamped backup files
+
+Backups are stored locally inside:
+
+database_backups/
+
+---
+
+# Security Features
+
+## Authentication
+
+* JWT Tokens
+* Token validation
+* Protected routes
+
+## Password Security
+
+* bcrypt password hashing
+* Password verification
+
+## Access Control
+
+* Admin-only endpoints
+* Employee-only endpoints
+* Ownership validation
+
+## Attendance Security
+
+* GPS validation
+* Office radius verification
+
+## API Protection
+
+* Rate limiting
+* Request throttling
+* CORS protection
+
+---
+
+# Technology Stack
+
+## Backend
 
 * FastAPI
 * SQLAlchemy
 * Pydantic
-* JWT Authentication
-* Passlib (bcrypt)
 
-### Database
+## Database
 
 * MySQL
 
-### Cloud Storage
+## Cloud Storage
 
 * Cloudinary
 
-### Other Libraries
+## Authentication
 
+* JWT
 * python-jose
-* python-multipart
+
+## Security
+
+* bcrypt
+* Passlib
+
+## Utilities
+
 * pytz
+* python-multipart
+* openpyxl
 
 ---
 
-## System Architecture
+# System Architecture
 
 Admin
 ↓
@@ -119,7 +299,13 @@ Employee Management
 ↓
 Office Management
 ↓
+Attendance Monitoring
+↓
 Task Assignment
+↓
+Reports
+↓
+Audit Monitoring
 
 Employee
 ↓
@@ -133,76 +319,82 @@ Evidence Upload
 
 Database
 ↓
-Attendance Records
-Task Records
-Employee Records
+Employees
+Attendance
+Tasks
+Audit Logs
+Error Logs
 
 Cloudinary
 ↓
-Attendance Images
-Task Images
+Task Evidence Images
 
 ---
 
-## Core Modules
+# API Modules
 
-### Authentication Module
+## Authentication
 
 * Admin Login
 * Employee Login
-* JWT Token Generation
-* Token Verification
 
-### Employee Module
+## Employees
 
 * Create Employee
-* View Employees
 * Update Employee
-* Change Employee Status
+* Activate/Deactivate Employee
+* Get Employee
+* List Employees
 
-### Office Module
+## Offices
 
 * Create Office
 * Update Office
-* View Offices
+* Delete Office
+* Get Office
+* List Offices
 
-### Attendance Module
+## Attendance
 
 * Mark Attendance
 * Attendance History
-* Attendance Reports
+* Attendance Summary
 * Manual Attendance
 
-### Task Module
+## Tasks
 
 * Create Task
 * Complete Task
+* Task Details
 * Upload Evidence
-* View Task Images
+* View Evidence
+* Delete Evidence
 * Task History
 
-### Dashboard Module
+## Reports
 
-* Employee Dashboard
-* Admin Dashboard
+* Attendance Report
+* Task Report
+* Summary Report
+* Available Report Dates
 
-### Profile Module
+## Monitoring
 
-* View Profile
-* Change Password
+* Audit Logs
+* Error Logs
 
 ---
 
-## Environment Variables
+# Environment Variables
 
-Create a `.env` file in the project root.
+Create a `.env` file in project root.
 
 ```env
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=your_user
+DB_USER=root
 DB_PASSWORD=your_password
-DB_NAME=municipal_attendance
+DB_NAME=municipal_db
 
 SECRET_KEY=your_secret_key
 ALGORITHM=HS256
@@ -215,99 +407,120 @@ CLOUDINARY_API_SECRET=your_api_secret
 
 ---
 
-## Installation
+# Installation
 
-### Clone Repository
+## Clone Repository
 
 ```bash
 git clone <repository-url>
 cd municipal_attendance_system
 ```
 
-### Create Virtual Environment
+## Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-### Activate Virtual Environment
+## Activate Environment
 
-Windows
+Windows:
 
 ```bash
 venv\Scripts\activate
 ```
 
-Linux / macOS
+Linux/macOS:
 
 ```bash
 source venv/bin/activate
 ```
 
-### Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run Application
+## Run Application
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-### API Documentation
+---
 
-Swagger UI:
+# API Documentation
 
-```text
+Swagger:
+
 http://localhost:8000/docs
-```
 
 ReDoc:
 
-```text
 http://localhost:8000/redoc
+
+---
+
+# Project Structure
+
+```text
+app/
+├── models/
+├── routes/
+├── schemas/
+├── utils/
+├── database.py
+├── config.py
+├── main.py
+
+reports/
+database_backups/
+temp_uploads/
+
+backup_database.py
+requirements.txt
+README.md
 ```
 
 ---
 
-## Security Features
+# Deployment Readiness
 
-* JWT Authentication
-* Password Hashing
-* Role-Based Access Control
-* Protected Routes
-* Ownership Validation
-* GPS Attendance Verification
+Current Backend Status:
+
+* Authentication Complete
+* Employee Module Complete
+* Office Module Complete
+* Attendance Module Complete
+* Task Module Complete
+* Reports Module Complete
+* Audit Logs Complete
+* Error Logs Complete
+* Database Backup Complete
+* Security Layer Complete
+
+Backend Version: V1.0 Production Ready
 
 ---
 
-## Future Roadmap
+# Future Roadmap (V2)
 
-### Planned Enhancements
-
-* Mobile Application
+* Refresh Tokens
+* Change Password
+* Forgot Password
+* Leave Management
+* Attendance Correction Requests
 * Push Notifications
-* Attendance Analytics
-* Employee Search & Filtering
-* Task Reassignment
-* Audit Logs
+* Mobile Application
+* Advanced Analytics Dashboard
 * Multi-Level Admin Roles
-* Attendance Export (Excel/PDF)
-* Reporting Dashboard
-* Geofencing Enhancements
+* Soft Delete System
 
 ---
 
-## License
+# License
 
 Private/Internal Use.
 
 All rights reserved.
-
----
-
-## Contact
-
-For deployment, customization, or support, contact the system administrator.
