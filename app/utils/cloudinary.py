@@ -18,7 +18,11 @@ def upload_image(file_path: str):
     """
 
     result = cloudinary.uploader.upload(
-        file_path
+        file_path,
+        folder="task_images"
     )
 
-    return result["secure_url"]
+    return {
+        "image_url": result["secure_url"],
+        "public_id": result["public_id"]
+    }

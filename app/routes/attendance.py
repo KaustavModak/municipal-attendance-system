@@ -28,7 +28,7 @@ from app.utils.dependencies import (
     get_current_admin,
     get_current_employee
 )
-
+from app.utils.audit import create_audit_log
 router = APIRouter(
     prefix="/attendance",
     tags=["Attendance"]
@@ -472,9 +472,14 @@ def mark_manual_attendance(
     )
 
     db.add(attendance)
-
     db.commit()
-
     db.refresh(attendance)
-
+    create_audit_log(
+        db=db,
+        admin_id=admin_id,
+        action="MANUAL_ATTENDANCE",
+        entity_type="Attendance",
+        entity_id=attendance.id,
+        details=f"Marked {attendance.status} for employee {attendance.employee_id}"
+    )
     return attendance

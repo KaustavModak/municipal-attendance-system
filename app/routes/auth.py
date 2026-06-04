@@ -5,6 +5,11 @@ from fastapi import Depends
 
 from sqlalchemy.orm import Session
 
+from fastapi import Request
+
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
 from app.database import SessionLocal
 
 from app.models.admin import Admin
@@ -24,6 +29,9 @@ router = APIRouter(
     tags=["Authentication"]
 )
 
+limiter = Limiter(
+    key_func=get_remote_address
+)
 
 def get_db():
     """
@@ -43,7 +51,9 @@ def get_db():
     "/admin/login",
     response_model=TokenResponse
 )
+@limiter.limit("5/minute")
 def admin_login(
+    request: Request,
     login_data: LoginRequest,
     db: Session = Depends(get_db)
 ):
@@ -89,7 +99,9 @@ def admin_login(
     "/employee/login",
     response_model=TokenResponse
 )
+@limiter.limit("10/minute")
 def employee_login(
+    request: Request,
     login_data: LoginRequest,
     db: Session = Depends(get_db)
 ):

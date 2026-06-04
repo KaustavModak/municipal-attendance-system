@@ -26,7 +26,6 @@ class TaskImage(Base):
 
     __tablename__ = "task_images"
 
-    # Primary key
     id = Column(
         Integer,
         primary_key=True,
@@ -34,26 +33,27 @@ class TaskImage(Base):
         index=True
     )
 
-    # Related task
     task_id = Column(
         Integer,
         ForeignKey("tasks.id"),
         nullable=False
     )
 
-    # Cloudinary URL
     image_url = Column(
         String(500),
         nullable=False
     )
 
-    # Upload timestamp
+    public_id = Column(
+        String(255),
+        nullable=True
+    )
+
     uploaded_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
     )
 
-    # Relationship to task
     task = relationship(
         "Task",
         backref="images"

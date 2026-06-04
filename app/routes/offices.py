@@ -2,12 +2,12 @@ from typing import List
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
-
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 
 from app.models.office import Office
+from app.models.employees import Employee
 
 from app.schemas.offices import (
     OfficeCreate,
@@ -18,7 +18,7 @@ from app.schemas.offices import (
 from app.utils.dependencies import (
     get_current_admin
 )
-
+from app.utils.audit import create_audit_log
 router = APIRouter(
     prefix="/offices",
     tags=["Offices"]
@@ -69,13 +69,17 @@ def create_office(
         longitude=office_data.longitude,
         radius_meters=office_data.radius_meters
     )
-
     db.add(office)
-
     db.commit()
-
     db.refresh(office)
-
+    create_audit_log(
+        db=db,
+        admin_id=admin_id,
+        action="CREATE_OFFICE",
+        entity_type="Office",
+        entity_id=office.id,
+        details=f"Created office {office.office_name}"
+    )
     return office
 
 # Endpoint to get all offices
@@ -160,7 +164,72 @@ def update_office(
     office.radius_meters = office_data.radius_meters
 
     db.commit()
-
     db.refresh(office)
-
+    create_audit_log(
+        db=db,
+        admin_id=admin_id,
+        action="UPDATE_OFFICE",
+        entity_type="Office",
+        entity_id=office.id,
+        details=f"Updated office {office.office_name}"
+    )
     return office
+
+@router.delete(
+    "/{office_id}"
+)
+def delete_office(
+    office_id: int,
+    db: Session = Depends(get_db),
+    admin_id: int = Depends(get_current_admin)
+):
+    """
+    Delete office.
+    """
+
+    office = (
+        db.query(Office)
+        .filter(
+            Office.id == office_id
+        )
+        .first()
+    )
+
+    if not office:
+        raise HTTPException(
+            status_code=404,
+            detail="Office not found"
+        )
+
+    employee_count = (
+        db.query(Employee)
+        .filter(
+            Employee.office_id == office_id
+        )
+        .count()
+    )
+
+    if employee_count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Office has employees assigned"
+        )
+
+    office_name = office.office_name
+
+    db.delete(office)
+
+    db.commit()
+
+    create_audit_log(
+        db=db,
+        admin_id=admin_id,
+        action="DELETE_OFFICE",
+        entity_type="Office",
+        entity_id=office_id,
+        details=f"Deleted office {office_name}"
+    )
+
+    return {
+        "message": "Office deleted successfully"
+    }

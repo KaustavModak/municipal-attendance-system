@@ -25,6 +25,7 @@ from app.utils.security import hash_password
 from app.utils.dependencies import (
     get_current_admin
 )
+from app.utils.audit import create_audit_log
 
 router = APIRouter(
     prefix="/employees",
@@ -100,11 +101,16 @@ def create_employee(
     )
 
     db.add(employee)
-
     db.commit()
-
     db.refresh(employee)
-
+    create_audit_log(
+        db=db,
+        admin_id=admin_id,
+        action="CREATE_EMPLOYEE",
+        entity_type="Employee",
+        entity_id=employee.id,
+        details=f"Created employee {employee.name}"
+    )
     return employee
 
 # Endpoint to get all employees
@@ -166,9 +172,15 @@ def update_employee_status(
     employee.status = status_data.status
 
     db.commit()
-
     db.refresh(employee)
-
+    create_audit_log(
+        db=db,
+        admin_id=admin_id,
+        action="CHANGE_EMPLOYEE_STATUS",
+        entity_type="Employee",
+        entity_id=employee.id,
+        details=f"Status changed to {employee.status}"
+    )
     return employee
 
 # Endpoint to get one employee
@@ -264,9 +276,15 @@ def update_employee(
     employee.office_id = employee_data.office_id
 
     db.commit()
-
     db.refresh(employee)
-
+    create_audit_log(
+        db=db,
+        admin_id=admin_id,
+        action="UPDATE_EMPLOYEE",
+        entity_type="Employee",
+        entity_id=employee.id,
+        details=f"Updated employee {employee.name}"
+    )
     return employee
 
 

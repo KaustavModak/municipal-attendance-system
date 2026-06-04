@@ -8,12 +8,10 @@ import uuid
 
 from app.utils.cloudinary import upload_image
 
-
 router = APIRouter(
     prefix="/upload",
     tags=["Upload"]
 )
-
 
 @router.post("/image")
 def upload_image_file(
@@ -46,7 +44,7 @@ def upload_image_file(
             file.file.read()
         )
 
-    image_url = upload_image(
+    upload_result = upload_image(
         temp_filename
     )
 
@@ -54,5 +52,9 @@ def upload_image_file(
         os.remove(temp_filename)
 
     return {
-        "image_url": image_url
+        "image_url":
+            upload_result["image_url"],
+
+        "public_id":
+            upload_result["public_id"]
     }
