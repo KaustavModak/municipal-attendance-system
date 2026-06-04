@@ -31,6 +31,12 @@ dist/
 *.db
 *.sqlite3
 
+# Generated reports
+reports/
+
+# Database backups
+database_backups/
+
 # Temporary Uploads
 temp_uploads/
 
