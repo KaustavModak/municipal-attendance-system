@@ -1,61 +1,17 @@
+# Backend
+backend/.env
+backend/reports/
+backend/database_backups/
+backend/temp_uploads/
+
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
 
-# Virtual Environment
-venv/
-env/
-.venv/
+# Frontend
+frontend/node_modules/
+frontend/.next/
 
-# Environment Variables
-.env
-
-# IDE
-.vscode/
-.idea/
-
-# OS Files
+# OS
 .DS_Store
 Thumbs.db
-
-# Python Packaging
-build/
-dist/
-*.egg-info/
-
-# Logs
-*.log
-
-# Database
-*.db
-*.sqlite3
-
-# Generated reports
-reports/
-
-# Database backups
-database_backups/
-
-# Temporary Uploads
-temp_uploads/
-
-# Pytest
-.pytest_cache/
-
-# Coverage
-.coverage
-htmlcov/
-
-# MyPy
-.mypy_cache/
-
-# Cloudinary temp files
-uploads/
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Generated files
-*.csv~
-*.tmp
