@@ -15,6 +15,6 @@ class TokenResponse(BaseModel):
     """
     Response returned after login.
     """
-
     access_token: str
     token_type: str
+    name: str

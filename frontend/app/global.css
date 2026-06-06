@@ -1,0 +1,13 @@
+:root {
+  --bg-primary: #07141A;
+  --bg-secondary: #111B21;
+  --card-bg: #1B2730;
+
+  --border-color: #2A3942;
+
+  --text-primary: #E9EDEF;
+  --text-secondary: #8696A0;
+
+  --accent: #00A884;
+  --accent-hover: #029977;
+}

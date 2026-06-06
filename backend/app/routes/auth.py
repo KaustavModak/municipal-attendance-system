@@ -92,7 +92,8 @@ def admin_login(
 
     return {
         "access_token": token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "name": admin.name
     }
 
 @router.post( # Employee login endpoint
@@ -148,5 +149,6 @@ def employee_login(
 
     return {
         "access_token": token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "name": employee.name
     }
