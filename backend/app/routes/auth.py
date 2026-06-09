@@ -19,6 +19,19 @@ from app.schemas.auth import (
     LoginRequest,
     TokenResponse
 )
+from app.utils.dependencies import (
+    get_current_admin)
+
+from app.schemas.auth import (
+    ChangePasswordRequest
+)
+
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
 
 from app.utils.security import verify_password
 from app.utils.auth import create_access_token
@@ -151,4 +164,46 @@ def employee_login(
         "access_token": token,
         "token_type": "bearer",
         "name": employee.name
+    }
+
+@router.put("/change-password")
+def change_password(
+    payload: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    admin_id: int = Depends(get_current_admin)
+):
+
+    admin = (
+        db.query(Admin)
+        .filter(Admin.id == admin_id)
+        .first()
+    )
+
+    if not admin:
+        raise HTTPException(
+            status_code=404,
+            detail="Admin not found"
+        )
+
+    if not pwd_context.verify(
+        payload.old_password,
+        admin.password_hash
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Old password is incorrect"
+        )
+
+    admin.password_hash = (
+        pwd_context.hash(
+            payload.new_password
+        )
+    )
+
+    db.commit()
+    db.refresh(admin)
+
+    return {
+        "message":
+        "Password changed successfully"
     }

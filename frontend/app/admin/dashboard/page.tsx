@@ -88,7 +88,7 @@ export default function AdminDashboard() {
             text-[#8696A0]
             "
           >
-            Here's today's summary.
+            Here's today's summary:
           </p>
 
           <div

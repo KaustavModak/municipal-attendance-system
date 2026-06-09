@@ -18,3 +18,8 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str
     name: str
+
+
+class ChangePasswordRequest(BaseModel): # Request body for changing password.
+    old_password: str
+    new_password: str

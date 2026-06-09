@@ -11,3 +11,7 @@
   --accent: #00A884;
   --accent-hover: #029977;
 }
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}

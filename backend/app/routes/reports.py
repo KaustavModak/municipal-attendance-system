@@ -49,29 +49,67 @@ os.makedirs(
     exist_ok=True
 )
 
-@router.get(  # Get available report dates for the last 60 days
+@router.get( # Get list of available report dates
     "/dates",
     response_model=List[ReportDateResponse]
 )
 def get_report_dates(
+    db: Session = Depends(get_db),
     admin_id: int = Depends(get_current_admin)
 ):
-    dates = []
-    today = datetime.now()
-    for i in range(60):
-        report_day = (
-            today - timedelta(days=i)
+
+    dates = set()
+
+    attendance_dates = (
+        db.query(
+            Attendance.date
         )
-        dates.append(
-            {
-                "date": report_day.strftime(
+        .distinct()
+        .all()
+    )
+
+    for row in attendance_dates:
+
+        if row[0]:
+
+            dates.add(
+                row[0].strftime(
                     "%d-%m-%Y"
                 )
-            }
-        )
-    return dates
+            )
 
-@router.get(     # Generate and download attendance report for a specific date
+    task_dates = (
+        db.query(
+            Task.assigned_at
+        )
+        .all()
+    )
+
+    for row in task_dates:
+
+        if row[0]:
+
+            dates.add(
+                row[0].strftime(
+                    "%d-%m-%Y"
+                )
+            )
+
+    sorted_dates = sorted(
+        dates,
+        key=lambda date: datetime.strptime(
+            date,
+            "%d-%m-%Y"
+        ),
+        reverse=True
+    )
+
+    return [
+        {"date": date}
+        for date in sorted_dates
+    ]
+
+@router.get(   # Generate and download attendance report for a specific date
     "/attendance/{report_date}"
 )
 def attendance_report(
@@ -104,44 +142,73 @@ def attendance_report(
         "Employee ID",
         "Employee Name",
         "Date",
-        "Time",
         "Status",
         "Latitude",
         "Longitude"
     ])
 
-    records = (
-        db.query(Attendance)
+    today = datetime.now().date()
+
+    employees = (
+        db.query(Employee)
         .filter(
-            Attendance.date == selected_date
+            Employee.status == "active"
         )
         .all()
     )
 
-    for record in records:
+    for employee in employees:
 
-        employee = (
-            db.query(Employee)
+        attendance = (
+            db.query(Attendance)
             .filter(
-                Employee.id == record.employee_id
+                Attendance.employee_id
+                == employee.id,
+
+                Attendance.date
+                == selected_date
             )
             .first()
         )
 
-        employee_name = (
-            employee.name
-            if employee
-            else "Unknown"
-        )
+        if attendance:
+
+            final_status = (
+                attendance.status
+            )
+
+            latitude = (
+                attendance.latitude
+            )
+
+            longitude = (
+                attendance.longitude
+            )
+
+        else:
+
+            if selected_date < today:
+
+                final_status = (
+                    "absent"
+                )
+
+            else:
+
+                final_status = (
+                    "not_marked"
+                )
+
+            latitude = ""
+            longitude = ""
 
         sheet.append([
-            record.employee_id,
-            employee_name,
-            str(record.date),
-            str(record.time),
-            record.status,
-            record.latitude,
-            record.longitude
+            employee.id,
+            employee.name,
+            str(selected_date),
+            final_status,
+            latitude,
+            longitude
         ])
 
     filename = os.path.join(
@@ -153,7 +220,9 @@ def attendance_report(
 
     return FileResponse(
         path=filename,
-        filename=os.path.basename(filename),
+        filename=os.path.basename(
+            filename
+        ),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
@@ -311,7 +380,7 @@ def summary_report(
         .count()
     )
 
-    absent = (
+    actual_absent = (
         db.query(Attendance)
         .filter(
             Attendance.date == selected_date,
@@ -328,9 +397,19 @@ def summary_report(
         .count()
     )
 
-    not_marked = (
+    missing = (
         total_employees - marked
     )
+    today = datetime.now().date()
+    if selected_date < today:
+        absent = (
+            actual_absent + missing
+        )
+        not_marked = 0
+
+    else:
+        absent = actual_absent
+        not_marked = missing
 
     completed_tasks = 0
 

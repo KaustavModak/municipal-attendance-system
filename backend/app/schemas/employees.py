@@ -1,10 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-
-class EmployeeCreate(BaseModel): # For creating new employee
+class EmployeeCreate(BaseModel):
     name: str
     phone: str
-    password: str
+    password: str = Field(
+        min_length=6
+    )
     office_id: int
 
 

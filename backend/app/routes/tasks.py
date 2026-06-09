@@ -109,6 +109,7 @@ def get_all_tasks(
 
     tasks = (
         db.query(Task)
+        .order_by(Task.id.desc())
         .all()
     )
 

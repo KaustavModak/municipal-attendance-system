@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
@@ -24,7 +25,6 @@ export default function DashboardLayout({
         setSidebarOpen={setSidebarOpen}
       />
 
-      {/* Dark Overlay */}
       {sidebarOpen && (
         <div
           className="
@@ -39,28 +39,26 @@ export default function DashboardLayout({
         />
       )}
 
-      {/* Sidebar */}
       <div
         className={`
-          fixed
-          top-0
-          left-0
-          h-screen
-          z-50
-          transform
-          transition-transform
-          duration-300
-          ${
-            sidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
-        `}
+        fixed
+        top-0
+        left-0
+        h-screen
+        z-50
+        transform
+        transition-transform
+        duration-300
+        ${
+          sidebarOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
+        }
+      `}
       >
         <Sidebar />
       </div>
 
-      {/* Main Content */}
       <main className="p-6">
         {children}
       </main>
