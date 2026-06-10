@@ -364,7 +364,17 @@ const deleteImage = async (
                     : "On Time"}
                 </span>
               </div>
-              
+              <div>
+                <p className="text-[#8696A0]">
+                    Completion Location
+                </p>
+
+                <p className="text-white mt-1">
+                    {task.completion_lat ?? "-"},
+                    {" "}
+                    {task.completion_lng ?? "-"}
+                </p>
+                </div>
             </div>
 
             <div className="flex gap-4 mt-10">

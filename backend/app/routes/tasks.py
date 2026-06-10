@@ -153,7 +153,17 @@ def complete_task(
             status_code=400,
             detail="Task already completed"
         )
+    image_count = (
+        db.query(TaskImage)
+        .filter(TaskImage.task_id == task_id)
+        .count()
+    )
 
+    if image_count == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Upload at least one proof image before completing task"
+        )
     ist = pytz.timezone("Asia/Kolkata")
     completion_time = datetime.now(ist)
     task.status = "completed"
@@ -198,12 +208,6 @@ def add_task_image(
         raise HTTPException(
             status_code=403,
             detail="Not your task"
-        )
-
-    if task.status != "completed":
-        raise HTTPException(
-            status_code=400,
-            detail="Task must be completed first"
         )
 
     task_image = TaskImage(
@@ -513,4 +517,50 @@ def delete_task_image_admin(
     return {
         "message":
         "Task image deleted successfully"
+    }
+
+@router.get(
+    "/my/tasks/{task_id}"
+)
+def get_my_task_details(
+    task_id: int,
+    db: Session = Depends(get_db),
+    employee_id: int = Depends(
+        get_current_employee
+    )
+):
+    """
+    Get details of a task
+    assigned to the logged-in
+    employee.
+    """
+
+    task = (
+        db.query(Task)
+        .filter(
+            Task.id == task_id,
+            Task.employee_id == employee_id
+        )
+        .first()
+    )
+
+    if not task:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found"
+        )
+
+    return {
+        "id": task.id,
+        "title": task.title,
+        "description": task.description,
+        "employee_id": task.employee_id,
+        "assigned_by": task.assigned_by,
+        "status": task.status,
+        "deadline": task.deadline,
+        "assigned_at": task.assigned_at,
+        "completed_at": task.completed_at,
+        "is_late": task.is_late,
+        "completion_lat": task.completion_lat,
+        "completion_lng": task.completion_lng
     }
